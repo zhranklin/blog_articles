@@ -19,11 +19,11 @@ protected void customizeRegistration(Dynamic registration) {
 ### 添加额外的Servlet和过滤器
 下面就是通过继承WebApplicationInitializer向容器注册一个Servlet(名为MyServlet)的方法:
 
-![](file:///Users/Zhranklin/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/36ED9C009D5A9FBEC501478068950319.epub/196fig01_alt.jpg)
+![](http://7xt2lb.com2.z0.glb.clouddn.com/196fig01_alt.jpg)
 
 类似的, 也可以注册监听器、过滤器:
 
-![](file:///Users/Zhranklin/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/36ED9C009D5A9FBEC501478068950319.epub/197fig01_alt.jpg)
+![](http://7xt2lb.com2.z0.glb.clouddn.com/197fig01_alt.jpg)
 
 如果需要将过滤器映射到DispatcherServlet, 只需覆盖AbstractAnnotationConfigDispatcherServletInitializer的getServletFilters()方法即可:
 
@@ -304,5 +304,5 @@ public String showSpitterProfile(
 
 flash attributes的原理图:
 
-![](file:///Users/Zhranklin/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/36ED9C009D5A9FBEC501478068950319.epub/07fig02.jpg)
+![](http://7xt2lb.com2.z0.glb.clouddn.com/07fig02.jpg)
 

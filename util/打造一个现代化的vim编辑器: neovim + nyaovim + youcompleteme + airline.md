@@ -26,7 +26,6 @@ Bram Moolenaar 在写 Vim 时还是 90 年代初，至今已经 20 多年 过去
 - 由于内部优化了事件监听器还是什么的, 代码粘贴的时候, 可以自动识别, 不像vim里一样需要:set paste, 不然会出现蜜汁缩进和括号对
 - 直接支持剪贴板, 不需要重新编译
 
-还有一些插件需要事先安装ctags和cscope(用包管理器就可以了)
 
 ## neovim基本配置
 ### neovim安装
@@ -52,6 +51,9 @@ pip install neovim
 最后, 使用nvim命令即可打开neovim编程器:
 
 `nvim`
+
+### cscope/ctags
+还有一些插件需要事先安装ctags和cscope(用包管理器就可以了)
 
 ### 从vim迁移
 由于neovim支持vim的所有特性, 从vim迁移到neovim是一件很容易的事情, wiki上给出了一个方案:

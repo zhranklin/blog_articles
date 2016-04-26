@@ -33,14 +33,14 @@ neovim已经被打包到了linux各个发行版上, 可以直接用对应的包�
 
 mac上直接用brew安装:
 
-```
+```bash
 brew install neovim/neovim/neovim
 ```
 
 不过在这里还没结束, 很多vim插件都是用python写的, 为了对这些插件进行支持, 还需要安装python上的neovim模块, 用pip安装:
 
 ### python模块
-```
+```bash
 pip install neovim
 ```
 
@@ -58,7 +58,7 @@ pip install neovim
 ### 从vim迁移
 由于neovim支持vim的所有特性, 从vim迁移到neovim是一件很容易的事情, wiki上给出了一个方案:
 
-```
+```bash
 mkdir -p ${XDG_CONFIG_HOME:=$HOME/.config}
 ln -s ~/.vim $XDG_CONFIG_HOME/nvim
 ln -s ~/.vimrc $XDG_CONFIG_HOME/nvim/init.vim
@@ -87,7 +87,7 @@ mac自带pbcopy和pbpaste, 所以不需要另外安装, 配置完毕后, 在操�
 ### 兼容输入法
 在vim下使用中文输入法是一件非常蛋疼的事情, 如果需要输入中文, 在普通模式和插入模式下, 得不停地切换输入法, 不过还是有解决办法的。linux用户直接安装fcitx.vim插件即可:
 
-```
+```vim
 Plug 'fcitx.vim'
 ```
 
@@ -96,12 +96,12 @@ Plug 'fcitx.vim'
 #### mac下vim兼容输入法
 安装[fcitx-remote-for-osx](https://github.com/CodeFalling/fcitx-remote-for-osx)
 
-```
+```bash
 brew install fcitx-remote-for-osx --with-input-method=baidu-pinyin
 ```
 --with-input-method=baidu-pinyin参数表示是为百度拼音安装的, 这个插件支持若干个输入法:
 
-```
+```bash
 --with-input-method=
   Select input method: baidu-pinyin(default), baidu-wubi, sogou-pinyin, qq-wubi, squirrel-rime, osx-pinyin, osx-wubi
 ```
@@ -116,25 +116,25 @@ brew install fcitx-remote-for-osx --with-input-method=baidu-pinyin
 
 使用这个命令:
 
-```
+```vim
 :e term://bash
 ```
 
 或者
 
-```
+```vim
 :e term://zsh
 ```
 
 或者
 
-```
+```vim
 :e term://python
 ```
 
 都是可以直接打开一个内置终端的, 只要在term://后面加上命令即可。当然了从上面可以看出, term://...是被当做文件来编辑的, 所以也可以:
 
-```
+```vim
 :vs term://scala
 ```
 
@@ -156,7 +156,7 @@ nmap t<Enter> :bo sp term://zsh\|resize 5<CR>i
 
 一般来说, 如果使用REPL的话, 还能用vim进行代码高亮, 这是直接用终端不太容易做到的, 比如:bo sp term://scala\|resize 5<CR>i之后, 可以使用scala的代码高亮:
 
-```
+```vim
 :set filetype=scala
 ```
 
@@ -169,7 +169,7 @@ python同理。
 #### vim-plug安装
 [github](https://github.com/junegunn/vim-plug)上给了一个最简单的方式:
 
-```
+```bash
 curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
@@ -472,152 +472,154 @@ c.vim, 一个写c/c++的神器, 内置了各种模板代码, 用的话还是参�
 
 还是列出来吧:
 
+```shell
+-- Help ---------------------------------------------------------------
 
-      -- Help ---------------------------------------------------------------
+   \hm       show manual for word under the cursor (n,i)
+   \hp       show plugin help                      (n,i)
 
-         \hm       show manual for word under the cursor (n,i)
-         \hp       show plugin help                      (n,i)
+-- Comments -----------------------------------------------------------
 
-      -- Comments -----------------------------------------------------------
+[n]\cl       end-of-line comment                 (n,v,i)
+[n]\cj       adjust end-of-line comment(s)       (n,v,i)
+   \cs       set end-of-line comment column      (n)
+[n]\c*       code -> comment /* */               (n,v)
+[n]\cc       code -> comment //                  (n,v)
+[n]\co       comment -> code                     (n,v)
+   \cfr      frame comment                       (n,i)
+   \cfu      function comment                    (n,i)
+   \cme      method description                  (n,i)
+   \ccl      class description                   (n,i)
+   \cfdi     file description (implementation)   (n,i)
+   \cfdh     file description (header)           (n,i)
+   \ccs      C/C++-file section  (tab. compl.)   (n,i)
+   \chs      H-file section      (tab. compl.)   (n,i)
+   \ckc      keyword comment     (tab. compl.)   (n,i)
+   \csc      special comment     (tab. compl.)   (n,i)
+   \cd       date                                (n,v,i)
+   \ct       date \& time                        (n,v,i)
+[n]\cx       toggle comments: C <--> C++         (n,v,i)
 
-      [n]\cl       end-of-line comment                 (n,v,i)
-      [n]\cj       adjust end-of-line comment(s)       (n,v,i)
-         \cs       set end-of-line comment column      (n)
-      [n]\c*       code -> comment /* */               (n,v)
-      [n]\cc       code -> comment //                  (n,v)
-      [n]\co       comment -> code                     (n,v)
-         \cfr      frame comment                       (n,i)
-         \cfu      function comment                    (n,i)
-         \cme      method description                  (n,i)
-         \ccl      class description                   (n,i)
-         \cfdi     file description (implementation)   (n,i)
-         \cfdh     file description (header)           (n,i)
-         \ccs      C/C++-file section  (tab. compl.)   (n,i)
-         \chs      H-file section      (tab. compl.)   (n,i)
-         \ckc      keyword comment     (tab. compl.)   (n,i)
-         \csc      special comment     (tab. compl.)   (n,i)
-         \cd       date                                (n,v,i)
-         \ct       date \& time                        (n,v,i)
-      [n]\cx       toggle comments: C <--> C++         (n,v,i)
+-- Statements ---------------------------------------------------------
 
-      -- Statements ---------------------------------------------------------
+   \sd       do { } while                        (n,v,i)
+   \sf       for                                 (n,i)
+   \sfo      for { }                             (n,v,i)
+   \si       if                                  (n,i)
+   \sif      if { }                              (n,v,i)
+   \sie      if else                             (n,v,i)
+   \sife     if { } else { }                     (n,v,i)
+   \se       else { }                            (n,v,i)
+   \sw       while                               (n,i)
+   \swh      while { }                           (n,v,i)
+   \ss       switch                              (n,v,i)
+   \sc       case                                (n,i)
+   \s{ \sb   { }                                 (n,v,i)
 
-         \sd       do { } while                        (n,v,i)
-         \sf       for                                 (n,i)
-         \sfo      for { }                             (n,v,i)
-         \si       if                                  (n,i)
-         \sif      if { }                              (n,v,i)
-         \sie      if else                             (n,v,i)
-         \sife     if { } else { }                     (n,v,i)
-         \se       else { }                            (n,v,i)
-         \sw       while                               (n,i)
-         \swh      while { }                           (n,v,i)
-         \ss       switch                              (n,v,i)
-         \sc       case                                (n,i)
-         \s{ \sb   { }                                 (n,v,i)
+-- Preprocessor -------------------------------------------------------
 
-      -- Preprocessor -------------------------------------------------------
+   \ps       choose a standard library include   (n,i)
+   \pc       choose a C99 include                (n,i)
+   \p<       #include <>                         (n,i)
+   \p"       #include ""                         (n,i)
+   \pd       #define                             (n,i)
+   \pu       #undef                              (n,i)
+   \pif      #if  #endif                         (n,v,i)
+   \pie      #if  #else #endif                   (n,v,i)
+   \pid      #ifdef #else #endif                 (n,v,i)
+   \pin      #ifndef #else #endif                (n,v,i)
+   \pind     #ifndef #def #endif                 (n,v,i)
+   \pi0      #if 0 #endif                        (n,v,i)
+   \pr0      remove #if 0 #endif                 (n,i)
+   \pe       #error                              (n,i)
+   \pl       #line                               (n,i)
+   \pp       #pragma                             (n,i)
 
-         \ps       choose a standard library include   (n,i)
-         \pc       choose a C99 include                (n,i)
-         \p<       #include <>                         (n,i)
-         \p"       #include ""                         (n,i)
-         \pd       #define                             (n,i)
-         \pu       #undef                              (n,i)
-         \pif      #if  #endif                         (n,v,i)
-         \pie      #if  #else #endif                   (n,v,i)
-         \pid      #ifdef #else #endif                 (n,v,i)
-         \pin      #ifndef #else #endif                (n,v,i)
-         \pind     #ifndef #def #endif                 (n,v,i)
-         \pi0      #if 0 #endif                        (n,v,i)
-         \pr0      remove #if 0 #endif                 (n,i)
-         \pe       #error                              (n,i)
-         \pl       #line                               (n,i)
-         \pp       #pragma                             (n,i)
+-- Idioms -------------------------------------------------------------
 
-      -- Idioms -------------------------------------------------------------
+   \if       function                            (n,v,i)
+   \isf      static function                     (n,v,i)
+   \im       main()                              (n,v,i)
+[n]\i0       for( x=0; x<n; x+=1 )               (n,v,i)
+[n]\in       for( x=n-1; x>=0; x-=1 )            (n,v,i)
+   \ie       enum   + typedef                    (n,i)
+   \is       struct + typedef                    (n,i)
+   \iu       union  + typedef                    (n,i)
+   \ip       printf()                            (n,i)
+   \isc      scanf()                             (n,i)
+   \ica      p=calloc()                          (n,i)
+   \ima      p=malloc()                          (n,i)
+   \ire      p=realloc()                         (n,i)
+   \isi      sizeof()                            (n,v,i)
+   \ias      assert()                            (n,v)
+   \ii       open input file                     (n,i)
+   \io       open output file                    (n,i)
+   \ifs      fscanf                              (n,i)
+   \ifp      fprintf                             (n,i)
 
-         \if       function                            (n,v,i)
-         \isf      static function                     (n,v,i)
-         \im       main()                              (n,v,i)
-      [n]\i0       for( x=0; x<n; x+=1 )               (n,v,i)
-      [n]\in       for( x=n-1; x>=0; x-=1 )            (n,v,i)
-         \ie       enum   + typedef                    (n,i)
-         \is       struct + typedef                    (n,i)
-         \iu       union  + typedef                    (n,i)
-         \ip       printf()                            (n,i)
-         \isc      scanf()                             (n,i)
-         \ica      p=calloc()                          (n,i)
-         \ima      p=malloc()                          (n,i)
-         \ire      p=realloc()                         (n,i)
-         \isi      sizeof()                            (n,v,i)
-         \ias      assert()                            (n,v)
-         \ii       open input file                     (n,i)
-         \io       open output file                    (n,i)
-         \ifs      fscanf                              (n,i)
-         \ifp      fprintf                             (n,i)
+-- Snippets -----------------------------------------------------------
 
-      -- Snippets -----------------------------------------------------------
+   \nr       read code snippet                   (n,i)
+   \nw       write code snippet                  (n,v,i)
+   \ne       edit code snippet                   (n,i)
+[n]\nf       pick up function prototype          (n,v,i)
+[n]\np       pick up function prototype          (n,v,i)
+[n]\nm       pick up method prototype            (n,v,i)
+   \ni       insert prototype(s)                 (n,i)
+   \nc       clear  prototype(s)                 (n,i)
+   \ns       show   prototype(s)                 (n,i)
+   \ntl      edit local templates                (n,i)
+   \ntg      edit global templates               (n,i)
+   \ntr      rebuild templates                   (n,i)
 
-         \nr       read code snippet                   (n,i)
-         \nw       write code snippet                  (n,v,i)
-         \ne       edit code snippet                   (n,i)
-      [n]\nf       pick up function prototype          (n,v,i)
-      [n]\np       pick up function prototype          (n,v,i)
-      [n]\nm       pick up method prototype            (n,v,i)
-         \ni       insert prototype(s)                 (n,i)
-         \nc       clear  prototype(s)                 (n,i)
-         \ns       show   prototype(s)                 (n,i)
-         \ntl      edit local templates                (n,i)
-         \ntg      edit global templates               (n,i)
-         \ntr      rebuild templates                   (n,i)
+-- C++ ----------------------------------------------------------------
 
-      -- C++ ----------------------------------------------------------------
+   \+co      cout  <<  << endl;                  (n,i)
+   \+"       << ""                               (n,i)
+   \+c       class                               (n,i)
+   \+ps      #include <...> STL                  (n,i)
+   \+pc      #include <c..> C                    (n,i)
+   \+cn      class (using new)                   (n,i)
+   \+ci      class implementation                (n,i)
+   \+cni     class (using new) implementation    (n,i)
+   \+mi      method implementation               (n,i)
+   \+ai      accessor implementation             (n,i)
 
-         \+co      cout  <<  << endl;                  (n,i)
-         \+"       << ""                               (n,i)
-         \+c       class                               (n,i)
-         \+ps      #include <...> STL                  (n,i)
-         \+pc      #include <c..> C                    (n,i)
-         \+cn      class (using new)                   (n,i)
-         \+ci      class implementation                (n,i)
-         \+cni     class (using new) implementation    (n,i)
-         \+mi      method implementation               (n,i)
-         \+ai      accessor implementation             (n,i)
+   \+tc      template class                      (n,i)
+   \+tcn     template class (using new)          (n,i)
+   \+tci     template class implementation       (n,i)
+   \+tcni    template class (using new) impl.    (n,i)
+   \+tmi     template method implementation      (n,i)
+   \+tai     template accessor implementation    (n,i)
 
-         \+tc      template class                      (n,i)
-         \+tcn     template class (using new)          (n,i)
-         \+tci     template class implementation       (n,i)
-         \+tcni    template class (using new) impl.    (n,i)
-         \+tmi     template method implementation      (n,i)
-         \+tai     template accessor implementation    (n,i)
+   \+tf      template function                   (n,i)
+   \+ec      error class                         (n,i)
+   \+tr      try ... catch                       (n,v,i)
+   \+ca      catch                               (n,v,i)
+   \+c.      catch(...)                          (n,v,i)
 
-         \+tf      template function                   (n,i)
-         \+ec      error class                         (n,i)
-         \+tr      try ... catch                       (n,v,i)
-         \+ca      catch                               (n,v,i)
-         \+c.      catch(...)                          (n,v,i)
+-- Run ----------------------------------------------------------------
 
-      -- Run ----------------------------------------------------------------
+  \rc       save and compile                    (n,i)
+  \rl       link                                (n,i)
+  \rr       run                                 (n,i)
+  \ra       set comand line arguments           (n,i)
+  \rm       run make                            (n,i)
+  \rmc      run 'make clean'                    (n,i)
+  \rcm      choose makefile                     (n,i)
+  \rme      executable to run                   (n,i)
+  \rma      cmd. line arg. for make             (n,i)
+  \rp       run splint                          (n,i)
+  \rpa      cmd. line arg. for splint           (n,i)
+  \rk       run CodeCheck (TM)                  (n,i)
+  \rka      cmd. line arg. for CodeCheck (TM)   (n,i)
+  \rd       run indent                          (n,v,i)
+[n]\rh       hardcopy buffer                     (n,v,i)
+  \rs       show plugin settings                (n,i)
+  \rx       set xterm size                      (n, only Linux/UNIX & GUI)
+  \ro       change output destination           (n,i)
 
-        \rc       save and compile                    (n,i)
-        \rl       link                                (n,i)
-        \rr       run                                 (n,i)
-        \ra       set comand line arguments           (n,i)
-        \rm       run make                            (n,i)
-        \rmc      run 'make clean'                    (n,i)
-        \rcm      choose makefile                     (n,i)
-        \rme      executable to run                   (n,i)
-        \rma      cmd. line arg. for make             (n,i)
-        \rp       run splint                          (n,i)
-        \rpa      cmd. line arg. for splint           (n,i)
-        \rk       run CodeCheck (TM)                  (n,i)
-        \rka      cmd. line arg. for CodeCheck (TM)   (n,i)
-        \rd       run indent                          (n,v,i)
-     [n]\rh       hardcopy buffer                     (n,v,i)
-        \rs       show plugin settings                (n,i)
-        \rx       set xterm size                      (n, only Linux/UNIX & GUI)
-        \ro       change output destination           (n,i)
+```
 
 它还有自动编译链接的功能, 不过我没用过
 
@@ -662,7 +664,7 @@ github上有详细的安装过程。
 
 装完之后(zsh用户请进入bash执行):
 
-```
+```bash
 CONFIGURE_OPTS="--enable-shared" pyenv install 3.5.0
 pyenv global 3.5.0
 ```
@@ -677,7 +679,7 @@ CONFIGURE_OPTS="...", 表示编译的时候加的参数, 一定要加上, 不然
 
 不过我在用pyenv指定的环境下编译出来的ycm, 一打开neovim就会闪退, 完全不像python的作风..后来一看系统出来的信息似乎是python动态库访问了非法内存(真的好无语...), 所以是python的bug么...无奈之下, 试一试用系统的python(pyenv的python是从python.org下载的, 跟系统自带(我忘了是自带还是用homebrew装的了)的应该不一样), `where python3`发现python3的目录是`/Library/Frameworks/Python.framework/Versions/3.5/`, 于是我把pyenv下的python删了, 换成这个版本
 
-```
+```bash
 cd ~/.pyenv/versions
 rm -rf 3.5.0
 cp /Library/Frameworks/Python.framework/Versions/3.5 3.5.0
@@ -690,7 +692,7 @@ cp /Library/Frameworks/Python.framework/Versions/3.5 3.5.0
 ### 配置
 安装完之后, 还需要一些简单的配置, ycm\_python\_binary\_path和ycm\_server\_python\_interpreter分别指定了python补全的版本和运行ycmd使用的解释器, 由于刚在是在python3环境下编译ycmd的, 所以后者必须是python3。
 
-```
+```bash
 let g:ycm_python_binary_path = '/Library/Frameworks/Python.framework/Versions/3.5/bin/python3'
 let g:ycm_server_python_interpreter = '/Library/Frameworks/Python.framework/Versions/3.5/bin/python3'
 ```
@@ -700,7 +702,7 @@ let g:ycm_server_python_interpreter = '/Library/Frameworks/Python.framework/Vers
 
 实际编辑的时候, 会发现ycm并不能找到std的库, faq里面有说明, 需要把相关的库添加到.ycm\_extra\_conf.py的flags中, `echo | clang -v -E -x c++ -`, 查看`#include  search starts here:`后面的路径, 为每一个路径添加一个`-isystem`参数(添加到flags数组里), 比如我执行`echo | clang -v -E -x c++ -`的结果是:
 
-```
+```bash
 Apple LLVM version 7.3.0 (clang-703.0.29)
 Target: x86_64-apple-darwin15.4.0
 Thread model: posix
@@ -764,13 +766,13 @@ nyaovim是这篇文章非常重要的一部分, 鉴于neovim非常好的扩展�
 ### 安装
 nyaovim的安装很简单:
 
-```
+```bash
 npm install -g nyaovim
 ```
 
 呃, 不会连npm都没有吧, 装一个:
 
-```
+```bash
 brew install nyaovim
 ```
 
@@ -780,7 +782,7 @@ linux各大发行版, 方式类似。
 
 在命令行中输入:
 
-```
+```bash
 nyaovim <文件名>
 ```
 

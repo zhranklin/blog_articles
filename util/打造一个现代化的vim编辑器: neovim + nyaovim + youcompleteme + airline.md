@@ -1,11 +1,13 @@
 # 打造一个现代化的vim编辑器: neovim + nyaovim + youcompleteme + airline
 ## 写在前面
-对于vim不熟悉的小朋友们, 我提前解释一下:
+vi是一个非常古老的编辑器, 大概电脑刚刚出现没有多久时间, 就已经有vi了, 后来出现了vim, 在vi的基础上增加了一系列新特性, 成为真正功能强大、高度可定制的文本编辑器。然而, 由于vim本身历史也比较久远, 无法完全适应日常编码的需求, 这里我就介绍一些更接近现代风格的新插件, 一个改进vim的新项目neovim, 及其GUI扩展--nyaovim。
+
+对于不熟悉vim的朋友们, 我提前解释一下:
 - `<leader>`如果没有被修改过, 就是\, 反斜杠
 - `<C-S>`的前缀C代表ctrl键所以是ctrl+s, `<S-SPACE>`, 前缀S代表shift, 所以是shift+space(不过我不确定neovim识不识别这个组合键)
 
 ## 简介
-vim是一个非常折腾人的插件, 从使用vim到neovim, 感觉折腾这个玩意儿是非常非常费时的, 不过, 折腾也是一种乐趣咯。我的配置文件是以前(使用windows的时候)在百度上找到的一个gvim+插件+配置文件的打包, 而且针对不同平台做了处理, 所以在电脑上装的各个系统都能用, 不过现在找不到原作者了。当我开始使用mac的时候, 因为意识到不太可能用gvim了, 所以把很大部分的代码(包括用不到的设置, gvim相关的代码, 各种if语句)都删掉了, 添加了自己的配置。
+从使用vim到neovim, 感觉折腾这个玩意儿是非常非常费时的, 不过, 折腾也是一种乐趣咯。我的配置文件是以前(使用windows的时候)在百度上找到的一个gvim+插件+配置文件的打包, 而且针对不同平台做了处理, 所以在电脑上装的各个系统都能用, 不过现在找不到原作者了。当我开始使用mac的时候, 因为意识到不太可能用gvim了, 所以把很大部分的代码(包括用不到的设置, gvim相关的代码, 各种if语句)都删掉了, 添加了自己的配置。
 
 ## neovim
 Bram Moolenaar 在写 Vim 时还是 90 年代初，至今已经 20 多年 过去了。其中，不仅包含了大量的遗留代码，而且程序的维护、Bug 的 修复、以及新特性的添加都变得越来越困难。为了解决这些问题，Neovim 项目应运而生。Neo 即“新”之意，它是 Vim 在这个新时代的重生。
@@ -428,7 +430,15 @@ set background=light
 #### gruvbox 
 差不多就是solarized的"暖屏"版, 个人更喜欢这个, 也可以设置深色和浅色。
 
-不管使用哪个主题, 都要记得把另一个的`Plug '...'`代码给注释掉。上面两个主题都有更深入的参数设置, 参见github
+不管使用哪个主题, 都要记得写上:`colorscheme solarized`或`colorscheme gruvbox`
+
+- 如果使用solarized, 请添加`let g:solarized_termcolors=256`, 并注释掉`let $NVIM_TUI_ENABLE_TRUE_COLOR=1`
+
+- 而如果使用gruvbox则要加上`let $NVIM_TUI_ENABLE_TRUE_COLOR=1`。
+
+**tips: **如果选择gruvbox, 就不需要修改我的配置文件了。
+
+上面两个主题都有更深入的参数设置, 参见github
 
 #### airline
 一个非常好用的编辑器底栏, 以优雅的方式显示当前文件的各种信息, 模式啊目录啊git增删改的行数(需要安装前面说的gitguter)等等, 还有顶部有一表情的形式显示的文件缓冲区, 可以用快捷键直接编辑相应的文件(我以我的就是t<number>了):
@@ -792,6 +802,19 @@ nyaovim <文件名>
 
 ![](http://7xt2lb.com2.z0.glb.clouddn.com/屏幕快照%202016-04-27%20上午2.14.11.png)
 
+不过目前mac下nyaovim有两个bug:
+
+- 在cmd+v粘贴的时候, 换行符都消失了, 全都显示在了一行, 只能在普通模式下用"+p进行粘贴
+- 与solarized主题不能兼容, 需要简单修改solarized的代码
+
+### 与solarized主题兼容
+好吧其实要改的很简单, 打开plugged/vim-colors-solarized/colors/solarized.vim文件, 修改代码, 理论上讲, 是要把所有`has("gui_running")`都换成`(has("gui_running") && exists('g:nyaovim_version'))`的(单引号双引号无所谓), 但是, 做我的配置里, 实际上只要把243行改成:
+
+```vim
+if ((has("gui_running")  || exists('g:nyaovim_version')) && g:solarized_degrade == 0)
+```
+
+就可以了。
 
 ## 代码清单
 有很多东西如快捷键设置等等在前面都没有提及, 还请参看后面的.vimrc

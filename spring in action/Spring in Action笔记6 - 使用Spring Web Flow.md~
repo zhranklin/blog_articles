@@ -88,7 +88,7 @@ FlowHandlerMapping装配了流程注册表, 于是相应的流程定义就能生
 <view-state id="welcome" />
 ```
 
-这里逻辑视图名就是welcome, 当然也能显式声明逻辑视图名:
+这里逻辑视图名就是welcome, 当然也能显示声明逻辑视图名:
 
 ```xml
 <view-state id="welcome" view="greeting"/>
@@ -174,7 +174,7 @@ expression中使用的是SpEL表达式, 表示调用id为pizzaFlowActions的bean
 最简单的方式就是声明变量
 
 ```xml
-<var id="com" class="springinaction.pizza.domain.Customer" name="customer" />
+<var id="com" class="springinaction pizza domain Customer" name="customer" />
 ```
 
 作为行为状态的一部分或者视图状态的入口, 可能需要使用evaluate(这里使用了SpEL):
@@ -185,11 +185,9 @@ expression中使用的是SpEL表达式, 表示调用id为pizzaFlowActions的bean
 
 可以使用set来设置变量的值:
 
-```xml
+```xlm
 <set name="..." value="..." />
 ```
-
-evaluate与set之间的区别基本上就在于set直接使用类的默认构造器(指定class属性)或使用java中的表达式(指定value属性), 而evaluate则使用SpEL。evaluate中, 也可以不指定result, 也就是直接把expression属性中的内容执行一遍
 
 #### 流程数据的作用域
 Spring Web Flow的作用域有五个:
@@ -203,7 +201,6 @@ Flash       | 流程开始时创建, 流程结束时销毁, 视图状态渲染�
 View        | 只在视图状态内可见
 
 ## 实例: 披萨流程
-### 大致结构
 大致的流程就是先进行用户识别, 选择一个或多个披萨添加到订单中, 提供支付信息, 然后提交订单。
 
 ![08fig02alt](http://7xt2lb.com1.z0.glb.clouddn.com/08fig02_alt.jpg)
@@ -212,10 +209,6 @@ View        | 只在视图状态内可见
 
 ![ch08ex01-0.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/ch08ex01-0.jpg)
 ![ch08ex01-1.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/ch08ex01-1.jpg)
-
-在这个基本流程中, 第一件事就是定义了一个com.springinaction.pizza.domain.Order, Order类的定义:
-
-Order是一个比较简单的类, 定义了一个订单的各种属性以及相应的getter, setter方法。
 
 ```java
 package com.springinaction.pizza.domain;
@@ -257,78 +250,3 @@ public class Order implements Serializable {
    }
 }
 ```
-
-通常情况下, flow里面定义的第一个状态就是流程访问的第一个状态, 也可以将flow元素的start-state属性设置为某个状态的id。
-
-流程变量order在前三个状态中进行了填充, 第一个流程(identifyCustomer)使用output元素填充order的customer属性, 而后面两个(buildOrder和takePayment)则将order同时作为输入和输出, 于是能够直接对order进行填充操作。
-
-到了第四个流程, 就可以对订单进行保存, 这里直接使用`<action-state>`, 利用里面的`<evaluate>`元素调用pizzaFlowActions.saveOrder()方法。最后转移到thankCustomer显示相应的页面。
-
-thankCustomer是一个`<view-state>`根据前面的说明, 没有显式声明逻辑视图名称的时候, 直接使用id(thankCustomer)作为逻辑视图名称, 实际使用的是`/WEB-INF/flows/pizza/thankCustomer.jsp`这个JSP文件。
-
-![232fig01alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/232fig01_alt.jpg)
-
-Spring Web Flow 为视图提供了一个flowExecutionUrl变量, 包含了流程的URL, 并指定\_eventId参数以便触发finished事件(不过我好像没看到代码里有这个, 我认为应该在包含的那个`<transition>`元素里添加一个on="finished"属性), 是的流程达到结束状态。
-
-流程结束后, 由于没有定义下一步做什么, 流程将会重新从identifuCustomer状态开始准备接受另一个披萨订单。
-
-### 收集顾客信息
-先来定义一下identifyCustomer这个子流程, 如图:
-
-![08fig03\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/08fig03_alt.jpg)
-
-逻辑比较简单 不解释, 下面是这个子流程的xml文件代码:
-
-  
-![ch08ex04-0.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/ch08ex04-0.jpg)
-![ch08ex04-1.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/ch08ex04-1.jpg)
-
-#### 各个部分的JSP网页代码
-
-![235fig01\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/235fig01_alt.jpg)
-
-关注一个hidden输入和一个提交按钮。那个hidden输入保存了一个flowExecutionKey, 当进入视图状态时, 服务器端的流程执行就会暂停并等待用户, 这个key用来指定哪个执行(等待)中的流程需要被恢复。而按钮的名字的"\_eventId"用来告诉Spring Web Flow接下来要触发的事件, 在这里, 会触发phoneEntered事件(进而转移到lookupCustomer状态)。
-
-注册部分的网页也差不多, 关注一下一个hidden input和两个submit input的作用即可:
-
-```html
-<html xmlns:c="http://java.sun.com/jsp/jstl/core"
-     xmlns:jsp="http://java.sun.com/JSP/Page"
-     xmlns:spring="http://www.springframework.org/tags"
-     xmlns:form="http://www.springframework.org/tags/form">
-  <jsp:output omit-xml-declaration="yes"/>
-  <jsp:directive.page contentType="text/html;charset=UTF-8" />
-  <head><title>Spizza</title></head>
-  <body>
-    <h2>Customer Registration</h2>
-    <form:form commandName="customer">
-      <input type="hidden" name="_flowExecutionKey"
-             value="${flowExecutionKey}"/>
-      <b>Phone number: </b><form:input path="phoneNumber"/><br/>
-      <b>Name: </b><form:input path="name"/><br/>
-      <b>Address: </b><form:input path="address"/><br/>
-      <b>City: </b><form:input path="city"/><br/>
-      <b>State: </b><form:input path="state"/><br/>
-      <b>Zip Code: </b><form:input path="zipCode"/><br/>
-      <input type="submit" name="_eventId_submit"
-             value="Submit" />
-      <input type="submit" name="_eventId_cancel"
-             value="Cancel" />
-    </form:form>
-    </body>
-</html>
-```
-
-还有个显示区域无法送达的JSP, 不贴了。
-
-### 构建订单
-![08fig04.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/08fig04.jpg)
-
-![238fig01\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/238fig01_alt.jpg)
-
-这个xml代码的其他部分原理和前面都差不多, 不同点就在于有一个`<input>`元素, 而且require属性被设置成了true, 这会从接受主流程中的对象(在主流程中定义这个子流程的时候有说明), 有点类似于Java中方法的签名。
-
-后面的其他代码基本类似, 在解释起来就没意思了(懒), 所以不贴了。
-
-## 保护Web流程
-并不是所有人都可以有权限访问某个流程(隐私嘛), 所以Web流程应该受到保护, 下一章关于Spring Security的介绍后, 我们就可以用它来结合Web流程对用户的行为进行限制了。

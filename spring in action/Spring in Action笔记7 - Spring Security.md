@@ -271,3 +271,150 @@ Spring Security对此进行了简化, 使用Thymeleaf的时候, 只要使用th:a
 ```
 
 当然一定要把这个功能关掉也是可以的, 调用.csrf().disable()即可。
+
+## 认证用户
+### 登录页
+如果使用的是一开始那个最简单的配置, 那么就会默认得到一个登录页, 但是一旦覆盖了configure(HttpSecurity)方法, 这个默认就失效了。找回这个功能也很容易, 只要在这个方法中调用formLogin()即可:
+
+![267fig01\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/267fig01_alt.jpg)
+
+但是往往我们会嫌他丑, 然后换成自己的登录页, 这时候, 除了编写自己的登录页之外, 还需要将登录页的路径设置一下, 也就是在.formLogin()后面加上.loginPage("/login"), 书上好像忘记讲了..
+
+表单部分的编写很简单, 只需要包含一个username输入域, 一个password输入域即可。
+
+### HTTP Basic认证
+很多时候, 并不仅仅是web浏览器会登录到服务器, 比如如果要编写RESTful API的话, 用表单来提示登录就不是很适合了。这时可以使用HTTP Basic认证, 在configure(HttpSecurity)方法中调用一次httpBasic()方法即可, 还可以通过realmName()方法指定域:
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+  http
+    .formLogin()
+      .loginPage("/login")
+    .and()
+    .httpBasic()
+      .realmName("Spittr")
+    .and()
+  ...
+}
+```
+
+### 启用Remember-me功能
+多数网站都会利用cookie来实现某段时间内免登陆的功能, 这里只要调用一次rememberMe()方法即可完成配置, 然后通过相关方法来设置有效时间以及指定相应的私钥:
+
+```java
+@Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http
+      .formLogin()
+        .loginPage("/login")
+      .and()
+      .rememberMe()
+        .tokenValiditySeconds(2419200)
+        .key("spittrKey")
+  ...
+}
+```
+
+默认的私钥是SpringSecured, 这里将它设置为spitterKey, 是他专门用于Spittr应用。然后在表单中添加一个复选框就能让用户选择是否"记住我":
+
+```java
+<input id="remember_me" name="remember-me" type="checkbox"/>
+<label for="remember_me" class="inline">Remember me</label>
+```
+
+### 退出
+Spring Security默认实现了退出登录的功能, 路径为"/logout", 所以只要有这样的链接即可实现该功能, 默认情况下登出之后, 会重定向到"/login?logout", 从而允许用户再次登录。而如果需要对这些设置进行更改, 同样是在configure(HttpSecurity)方法里:
+
+```java
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+  http
+    .formLogin()
+      .loginPage("/login")
+    .and()
+    .logout()
+      .logoutSuccessUrl("/")
+      .logoutUrl("/signout")
+  ...
+}
+```
+
+## 对视图进行保护
+在网页中, 我们希望显示与安全限制相关的信息, 比如用户的个人信息之类的, Spring Security本身提供了一个JSP标签库, 而Thymeleaf则通过特定的方言提供了与Spring Security的集成。
+
+### JSP中使用Spring Security
+Spring Security的JSP标签库很小, 只有三个标签(汗...):
+
+JSP tag                        | What it does
+---                            | ---
+`<security:accesscontrollist>` | Conditionally renders its body content if the user is granted authorities by an access control list
+`<security:authentication>`    | Renders details about the current authentication
+`<security:authorize>`         | Conditionally renders its body content if the user is granted certain authorities or if a SpEL expression evaluates to true
+
+好吧其实功能还是齐全的, 可以指定各种属性来规定一些细节, 为了使用这个标签库, 需要先声明它:
+
+```html
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+```
+
+最先想到的就应该是显示用户的认证信息了, 这也是能做到的最简单的事情:
+
+```html
+Hello <security:authentication property="principal.username" />!
+```
+
+这种"你好某某某!"的格式我们常常在论坛或者各种应用的网页上能看到, property用来说明要显示用户的哪个属性, 可用的书性取决于用户认证的方式, 一些通用的属性如下:
+
+Authentication property | Description
+---                     | ---
+authorities             | A collection of GrantedAuthority objects that represent the privileges granted to the user
+credentials             | The credentials that were used to verify the principal (commonly, this is the user's password)
+details                 | Additional information about the authentication (IP address, certificate serial number, session ID, and so on)
+principal               | The user's principal
+
+如果想要把得到的东西复制给一个变量, 增加一个var属性, 指明为变量的名字即可, 这个变量的作用域默认是在这个页面内的, 如果要在其他作用域内创建它, 如请求或者会话作用域, 则可以通过scope属性声明:
+
+```html
+<security:authentication property="principal.username"
+        var="loginId" scope="request" />
+```
+
+其次就是条件性渲染某些内容了(比如回复可见之类的), 刚才那个表格里又说到, `<security:authorize>`标签能够根据用户被授予的权限有条件的渲染内容, 例如, 如果规定只对有ROLE\_SPITTER角色的用户, 才显示添加新Spitter记录的表单:
+
+![273fig01\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/273fig01_alt.jpg)
+
+和前面HttpSecurity对象的路径设置中的access方法是一样的, 接受某个SpEL表达式, 其为真的时候才会将整个标签内的内容显示出来。SpEL能使用的内容参照前面的表格即可。
+
+`<security:authorize>`还可以指定一个url属性, 只有当前的url满足一定的模式的时候, 整个内容才会被渲染出来。
+
+### Thymeleaf的Spring Security方言
+在Thymeleaf中, 是使用相关的属性来完成权限控制的功能的, 为了达到这个框架本身的初衷嘛, 保证能直接在网页中显示出来。
+
+Attribute          | What it does
+---                | ---
+sec:authentication | Renders properties of the authentication object. Similar to Spring Security��s <sec:authentication/> JSP tag.
+sec:authorize      | Conditionally renders content based on evaluation of an expression. Similar to Spring Security's <sec:authorize/> JSP tag.
+sec:authorize-acl  | Conditionally renders content based on evaluation of an expression. Similar to Spring Security's <sec:accesscontrollist/> JSP tag.
+sec:authorize-expr | An alias for the sec:authorize attribute.
+sec:authorize-url  | Conditionally renders content based on evaluation of security rules associated with a given URL path. Similar to Spring Security's <sec:authorize/> JSP tag when using the url attribute.
+
+好吧虽然多了几个标签, 但实际功能和JSP一模一样..
+
+为了使用这个Spring Security方言, 我们需要保证Thymeleaf Extras Spring Security在应用的classpath下, 然后在Spring中使用`SpringTemplateEngine`来注册`SpringSecurityDialect`:
+
+![276fig01\_alt.jpg](http://7xt2lb.com1.z0.glb.clouddn.com/276fig01_alt.jpg)
+
+然后在Thymeleaf中声明他的命名空间:
+
+```html
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec=
+          "http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+  ...
+</html>
+```
+
+东西和JSP的那一部分是一模一样的, 所以也没什么好说的了。(终于写完了累死我了....)
